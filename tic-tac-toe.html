@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aesthetic Tic Tac Toe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f6f7f8;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 30px;
+      font-weight: 600;
+      color: #1f1f1f;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 90px);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .cell {
+      width: 90px;
+      height: 90px;
+      background: #ffffff;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      transition: background 0.2s ease;
+    }
+
+    .cell:hover {
+      background: #f0f0f0;
+    }
+
+    .status {
+      font-size: 16px;
+      margin-bottom: 15px;
+      color: #555;
+    }
+
+    button {
+      background: #1f7aff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background: #1664d8;
+    }
+
+    @media (max-width: 500px) {
+      .board {
+        grid-template-columns: repeat(3, 70px);
+      }
+
+      .cell {
+        width: 70px;
+        height: 70px;
+        font-size: 26px;
+      }
+
+      h1 {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Tic Tac Toe</h1>
+
+  <div class="board" id="board"></div>
+  <div class="status" id="status">Current Player: X</div>
+  <button onclick="resetGame()">Restart Game</button>
+
+  <script>
+    const board = document.getElementById("board");
+    const statusText = document.getElementById("status");
+    let currentPlayer = "X";
+    let gameActive = true;
+    let gameState = Array(9).fill("");
+
+    const winConditions = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8],
+      [0, 3, 6], [1, 4, 7], [2, 5, 8],
+      [0, 4, 8], [2, 4, 6]
+    ];
+
+    function handleCellClick(e) {
+      const index = e.target.dataset.index;
+      if (gameState[index] || !gameActive) return;
+
+      gameState[index] = currentPlayer;
+      e.target.textContent = currentPlayer;
+
+      if (checkWin()) {
+        statusText.textContent = `${currentPlayer} wins! 🎉`;
+        gameActive = false;
+      } else if (!gameState.includes("")) {
+        statusText.textContent = "It's a draw!";
+        gameActive = false;
+      } else {
+        currentPlayer = currentPlayer === "X" ? "O" : "X";
+        statusText.textContent = `Current Player: ${currentPlayer}`;
+      }
+    }
+
+    function checkWin() {
+      return winConditions.some(([a, b, c]) => {
+        return gameState[a] && gameState[a] === gameState[b] && gameState[a] === gameState[c];
+      });
+    }
+
+    function resetGame() {
+      gameState = Array(9).fill("");
+      gameActive = true;
+      currentPlayer = "X";
+      statusText.textContent = `Current Player: ${currentPlayer}`;
+      document.querySelectorAll(".cell").forEach(cell => cell.textContent = "");
+    }
+
+    // Create the board
+    for (let i = 0; i < 9; i++) {
+      const cell = document.createElement("div");
+      cell.classList.add("cell");
+      cell.dataset.index = i;
+      cell.addEventListener("click", handleCellClick);
+      board.appendChild(cell);
+    }
+  </script>
+
+</body>
+</html>
